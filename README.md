@@ -1,6 +1,7 @@
 # appdevproject
 
-Theme of the project is - Alumni Connect.
+Theme of the project - Alumni Connect.
+
 Features Include
 - Latest posts of your connections in feed
 - ChatBox to interact with the alumni
