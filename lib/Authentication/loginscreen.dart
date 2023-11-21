@@ -1,3 +1,4 @@
+import 'package:appdevproject/Authentication/forgotpasswordscreen.dart';
 import 'package:appdevproject/Authentication/signupscreen.dart';
 import 'package:appdevproject/Screens/Homescreen.dart';
 import 'package:appdevproject/Widgets/widgets.dart';
@@ -5,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -14,75 +15,64 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           color: Color.fromARGB(142, 170, 96, 254),
-          // gradient: LinearGradient(
-          //   begin: Alignment.bottomCenter,
-          //   end: Alignment.topCenter,
-          //   colors: [
-          //     Color.fromARGB(255, 170, 96, 254),
-          //     Color.fromARGB(255, 183, 119, 255),
-          //     Color.fromARGB(255, 195, 148, 249),
-          //     Colors.white,
-          //   ],
-          // ),
         ),
         child: Center(
           child: SingleChildScrollView(
             padding: EdgeInsets.all(20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(
-                  height: 5,
+                  height: 50,
                 ),
-                Container(
-                  height: 350,
+                Text(
+                  'Login',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontFamily: 'Roboto',
+                  ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
-                // const Spacer(),
-                Row(
-                  children: [
-                    const SizedBox(width: 10),
-                    Text(
-                      'Login',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontFamily: 'Roboto'),
-                    ),
-                    const Spacer()
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                reusableTextField('Enter Email Id', Icons.person_2_outlined,
-                    false, _emailTextController),
-                SizedBox(height: 15),
-                reusableTextField('Enter Password', Icons.lock_outlined, true,
-                    _passwordTextController),
                 SizedBox(height: 20),
-                button(context, 'Login', () {
-                  FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: _emailTextController.text,
-                          password: _passwordTextController.text)
-                      .then((value) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                  }).onError((error, stackTrace) {
-                    print("Error ${error.toString()}");
-                  });
-                }),
+                reusableTextField(
+                  'Enter Email Id',
+                  Icons.email_outlined,
+                  false,
+                  _emailTextController,
+                ),
+                SizedBox(height: 15),
+                reusableTextField(
+                  'Enter Password',
+                  Icons.lock_outlined,
+                  true,
+                  _passwordTextController,
+                ),
+                SizedBox(height: 10),
+                forgetPassword(context),
+                _isLoading
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(160, 10, 160, 10),
+                        child: Container(
+                          width: 24, // Adjust the width to your preference
+                          height: 24, // You can also adjust the height
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                      )
+                    : button(context, 'Login', _login),
                 signUpOption(),
               ],
             ),
@@ -92,18 +82,62 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _login() {
+    if (_emailTextController.text.isEmpty ||
+        !RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+            .hasMatch(_emailTextController.text) ||
+        _passwordTextController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please enter valid details"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    FirebaseAuth.instance
+        .signInWithEmailAndPassword(
+      email: _emailTextController.text,
+      password: _passwordTextController.text,
+    )
+        .then((value) {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }).catchError((error) {
+      setState(() {
+        _isLoading = false;
+      });
+      print("Error: ${error.toString()}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error: ${error.toString()}"),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    });
+  }
+
   Row signUpOption() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have account?",
-            style: TextStyle(color: Colors.white70)),
+        Text("Don't have an account?", style: TextStyle(color: Colors.white70)),
         GestureDetector(
           onTap: () {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => SignupScreen()));
           },
-          child: const Text(
+          child: Text(
             " Sign Up",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
@@ -114,16 +148,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget forgetPassword(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 35,
       alignment: Alignment.bottomRight,
       child: TextButton(
-        child: const Text(
+        child: Text(
           "Forgot Password?",
           style: TextStyle(color: Colors.white70),
           textAlign: TextAlign.right,
         ),
-        onPressed: () {},
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ResetPassword()),
+        ),
       ),
     );
   }
