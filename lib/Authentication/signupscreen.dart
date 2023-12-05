@@ -1,6 +1,8 @@
-import 'package:appdevproject/Screens/Homescreen.dart';
+import 'package:appdevproject/Authentication/auth_services.dart';
+import 'package:appdevproject/Screens/FeedScreen.dart';
 import 'package:appdevproject/Widgets/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(140, 170, 96, 254),
       appBar: AppBar(
         backgroundColor: Color.fromARGB(142, 170, 96, 254),
         elevation: 0,
@@ -27,9 +30,6 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(142, 170, 96, 254),
-        ),
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.fromLTRB(20, 120, 20, 0),
@@ -75,7 +75,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 20),
                 _isLoading
-                    ? CircularProgressIndicator(
+                    ? const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white))
                     : button(context, "Sign Up", _signUp),
               ],
@@ -86,7 +86,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  void _signUp() {
+  Future<void> _signUp() async {
     // Validate input
     if (_userNameTextController.text.isEmpty ||
         _emailTextController.text.isEmpty ||
@@ -105,32 +105,45 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _isLoading = true;
     });
-
-    FirebaseAuth.instance
-        .createUserWithEmailAndPassword(
-      email: _emailTextController.text,
-      password: _passwordTextController.text,
-    )
-        .then((value) {
-      setState(() {
-        _isLoading = false;
-      });
-      print("Created New Account");
+    bool isValid = await AuthService.signUp(_userNameTextController.text,
+        _emailTextController.text, _passwordTextController.text);
+    if (isValid) {
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(
+            builder: (context) => FeedScreen(
+                  currentUserId: FirebaseAuth.instance.currentUser!.uid,
+                )),
       );
-    }).catchError((error) {
-      setState(() {
-        _isLoading = false;
-      });
-      print("Error: ${error.toString()}");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: ${error.toString()}"),
-          duration: Duration(seconds: 2),
-        ),
-      );
-    });
+    } else {
+      print('something wrong');
+    }
+    // FirebaseAuth.instance
+    //     .createUserWithEmailAndPassword(
+    //   email: _emailTextController.text,
+    //   password: _passwordTextController.text,
+    // )
+    //     .then((value) {
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    //   print("Created New Account");
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => HomeScreen()),
+    // );
+    // }).catchError((error) {
+    //   setState(() {
+    //     _isLoading = false;
+    //   });
+    //   print("Error: ${error.toString()}");
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text("Error: ${error.toString()}"),
+    //       duration: Duration(seconds: 2),
+    //     ),
+    //   );
+    // });
   }
 }

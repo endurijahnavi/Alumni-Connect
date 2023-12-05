@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:appdevproject/Authentication/loginscreen.dart';
+import 'package:appdevproject/Screens/FeedScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Splashscreen extends StatefulWidget {
@@ -38,16 +42,27 @@ class _SplashscreenState extends State<Splashscreen>
 
     _animationController.forward();
 
-    _navigateToAuthScreenAfterDelay();
-  }
-
-  void _navigateToAuthScreenAfterDelay() async {
-    await Future.delayed(Duration(seconds: 2));
-    await _animationController.reverse(); // Start the fade-out animation
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => LoginScreen(),
-      ),
+    Timer(
+      const Duration(seconds: 3),
+      () {
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+// user not logged ==> Login Screen
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+              (route) => false);
+        } else {
+// user already logged in ==> Home Screen
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => FeedScreen(
+                        currentUserId: user.uid,
+                      )),
+              (route) => false);
+        }
+      },
     );
   }
 

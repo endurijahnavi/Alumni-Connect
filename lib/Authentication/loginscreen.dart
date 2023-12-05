@@ -1,6 +1,6 @@
 import 'package:appdevproject/Authentication/forgotpasswordscreen.dart';
 import 'package:appdevproject/Authentication/signupscreen.dart';
-import 'package:appdevproject/Screens/Homescreen.dart';
+import 'package:appdevproject/Screens/FeedScreen.dart';
 import 'package:appdevproject/Widgets/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,21 +20,21 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(140, 170, 96, 254),
       body: Container(
-        decoration: BoxDecoration(
-          color: Color.fromARGB(142, 170, 96, 254),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(20),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 350, 20, 40),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 50,
                 ),
-                Text(
+                const Text(
                   'Login',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -44,35 +44,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontFamily: 'Roboto',
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 reusableTextField(
                   'Enter Email Id',
                   Icons.email_outlined,
                   false,
                   _emailTextController,
                 ),
-                SizedBox(height: 15),
+                const SizedBox(height: 15),
                 reusableTextField(
                   'Enter Password',
                   Icons.lock_outlined,
                   true,
                   _passwordTextController,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 forgetPassword(context),
-                _isLoading
-                    ? Padding(
-                        padding: const EdgeInsets.fromLTRB(160, 10, 160, 10),
-                        child: Container(
-                          width: 24, // Adjust the width to your preference
-                          height: 24, // You can also adjust the height
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        ),
-                      )
-                    : button(context, 'Login', _login),
+                button(context, 'Login', _login),
                 signUpOption(),
               ],
             ),
@@ -88,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
             .hasMatch(_emailTextController.text) ||
         _passwordTextController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text("Please enter valid details"),
           duration: Duration(seconds: 2),
         ),
@@ -111,7 +99,10 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(
+            builder: (context) => FeedScreen(
+                  currentUserId: FirebaseAuth.instance.currentUser!.uid,
+                )),
       );
     }).catchError((error) {
       setState(() {
@@ -121,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text("Error: ${error.toString()}"),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     });
@@ -131,13 +122,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Don't have an account?", style: TextStyle(color: Colors.white70)),
+        const Text("Don't have an account?",
+            style: TextStyle(color: Colors.white70)),
         GestureDetector(
           onTap: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SignupScreen()));
+                MaterialPageRoute(builder: (context) => const SignupScreen()));
           },
-          child: Text(
+          child: const Text(
             " Sign Up",
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
@@ -150,14 +142,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       alignment: Alignment.bottomRight,
       child: TextButton(
-        child: Text(
+        child: const Text(
           "Forgot Password?",
           style: TextStyle(color: Colors.white70),
           textAlign: TextAlign.right,
         ),
         onPressed: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ResetPassword()),
+          MaterialPageRoute(builder: (context) => const ResetPassword()),
         ),
       ),
     );
