@@ -13,8 +13,8 @@ Features Include
 
 Team
 
-Enduri Jahnavi
-Prasanna 
-Rishi
-Zuhair 
-Vamsi
+Enduri Jahnavi,
+Prasanna, 
+Rishi,
+Zuhair,
+Vamsi.
