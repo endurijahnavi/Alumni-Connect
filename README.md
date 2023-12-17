@@ -10,3 +10,10 @@ Features Include
 - Search for existing users
 - Post your updates which will be visible in the feed of all the users that follow your account 
 - Like Posts that are informative or helpful
+
+Team 
+Enduri Jahnavi
+Prasanna 
+Rishi
+Zuhair 
+Vamsi
