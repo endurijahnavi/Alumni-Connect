@@ -51,7 +51,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Divider(
-                    color: Color.fromARGB(142, 170, 96, 254),
+                    color: Color.fromRGBO(82, 184, 206, 100),
                     thickness: 1,
                   ),
                 )

@@ -167,219 +167,273 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        endDrawer: Drawer(
+          child: Column(
+            children: [
+              // Drawer items
+              SizedBox(
+                height: 40,
+              ),
+              ListTile(
+                leading: Icon(Icons.logout),
+                title: Text('Logout'),
+                onTap: () {
+                  AuthService.logout();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Splashscreen(),
+                    ),
+                  );
+                },
+              ),
+
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Settings'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: Icon(Icons.file_copy),
+                title: Text('Terms of Services'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: Icon(Icons.privacy_tip_outlined),
+                title: Text('Privacy Policy'),
+                onTap: () {},
+              ),
+            ],
+          ),
+        ),
         body: FutureBuilder(
-      future: usersRef.doc(widget.visitedUserId).get(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(
-                Color.fromARGB(142, 170, 96, 254),
-              ),
-            ),
-          );
-        }
-        UserModel userModel = UserModel.fromDoc(snapshot.data);
-        return ListView(
-          physics: const BouncingScrollPhysics(
-              parent: AlwaysScrollableScrollPhysics()),
-          children: [
-            Container(
-              height: 150,
-              decoration: BoxDecoration(
-                color: Color.fromARGB(142, 170, 96, 254),
-                image: userModel.coverImage.isEmpty
-                    ? null
-                    : DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(userModel.coverImage),
-                      ),
-              ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox.shrink(),
-                    widget.currentUserId == widget.visitedUserId
-                        ? PopupMenuButton(
-                            icon: Icon(
-                              Icons.more_horiz,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                            itemBuilder: (_) {
-                              return <PopupMenuItem<String>>[
-                                new PopupMenuItem(
-                                  child: Text('Logout'),
-                                  value: 'logout',
-                                )
-                              ];
-                            },
-                            onSelected: (selectedItem) {
-                              if (selectedItem == 'logout') {
-                                AuthService.logout();
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Splashscreen()));
-                              }
-                            },
-                          )
-                        : SizedBox(),
-                  ],
+          future: usersRef.doc(widget.visitedUserId).get(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(
+                    Color.fromRGBO(82, 184, 206, 100),
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              transform: Matrix4.translationValues(0.0, -40.0, 0.0),
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+              );
+            }
+            UserModel userModel = UserModel.fromDoc(snapshot.data);
+            return ListView(
+              physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              children: [
+                Container(
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(82, 184, 206, 100),
+                    image: userModel.coverImage.isEmpty
+                        ? null
+                        : DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(userModel.coverImage),
+                          ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox.shrink(),
+                        widget.currentUserId == widget.visitedUserId
+                            ? IconButton(
+                                icon: Icon(Icons.menu),
+                                onPressed: () {
+                                  // Open the drawer
+                                  Scaffold.of(context).openEndDrawer();
+                                },
+                              )
+                            // ? PopupMenuButton(
+                            //     icon: Icon(
+                            //       Icons.more_horiz,
+                            //       color: Colors.white,
+                            //       size: 30,
+                            //     ),
+                            //     itemBuilder: (_) {
+                            //       return <PopupMenuItem<String>>[
+                            //         new PopupMenuItem(
+                            //           child: Text('Logout'),
+                            //           value: 'logout',
+                            //         )
+                            //       ];
+                            //     },
+                            //     onSelected: (selectedItem) {
+                            //       if (selectedItem == 'logout') {
+                            //         AuthService.logout();
+                            //         Navigator.pushReplacement(
+                            //             context,
+                            //             MaterialPageRoute(
+                            //                 builder: (context) => Splashscreen()));
+                            //       }
+                            //     },
+                            //   )
+                            : SizedBox(),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  transform: Matrix4.translationValues(0.0, -40.0, 0.0),
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 45,
-                        backgroundImage: userModel.profilePicture.isEmpty
-                            ? AssetImage('assets/images/splashscreenpic.png')
-                            : NetworkImage(userModel.profilePicture.toString())
-                                as ImageProvider<Object>?,
-                      ),
-                      widget.currentUserId == widget.visitedUserId
-                          ? GestureDetector(
-                              onTap: () async {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditProfileScreen(
-                                      user: userModel,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          CircleAvatar(
+                            radius: 45,
+                            backgroundImage: userModel.profilePicture.isEmpty
+                                ? AssetImage(
+                                    'assets/images/splashscreenpic.png')
+                                : NetworkImage(
+                                        userModel.profilePicture.toString())
+                                    as ImageProvider<Object>?,
+                          ),
+                          widget.currentUserId == widget.visitedUserId
+                              ? GestureDetector(
+                                  onTap: () async {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditProfileScreen(
+                                          user: userModel,
+                                        ),
+                                      ),
+                                    );
+                                    setState(() {});
+                                  },
+                                  child: Container(
+                                    width: 100,
+                                    height: 35,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.white,
+                                      border: Border.all(
+                                        color:
+                                            Color.fromRGBO(82, 184, 206, 100),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        'Edit',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          color:
+                                              Color.fromRGBO(82, 184, 206, 100),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                );
-                                setState(() {});
-                              },
-                              child: Container(
-                                width: 100,
-                                height: 35,
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Color.fromARGB(142, 170, 96, 254),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    'Edit',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Color.fromARGB(142, 170, 96, 254),
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )
-                          : GestureDetector(
-                              onTap: followOrUnFollow,
-                              child: Container(
-                                width: 100,
-                                height: 35,
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: _isFollowing
-                                      ? Colors.white
-                                      : Color.fromARGB(142, 170, 96, 254),
-                                  border: Border.all(
-                                    color: Color.fromARGB(142, 170, 96, 254),
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    _isFollowing ? 'Following' : 'Follow',
-                                    style: TextStyle(
-                                      fontSize: 17,
+                                )
+                              : GestureDetector(
+                                  onTap: followOrUnFollow,
+                                  child: Container(
+                                    width: 100,
+                                    height: 35,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
                                       color: _isFollowing
-                                          ? Color.fromARGB(142, 170, 96, 254)
-                                          : Colors.white,
-                                      fontWeight: FontWeight.bold,
+                                          ? Colors.white
+                                          : Color.fromRGBO(82, 184, 206, 100),
+                                      border: Border.all(
+                                        color:
+                                            Color.fromRGBO(82, 184, 206, 100),
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        _isFollowing ? 'Following' : 'Follow',
+                                        style: TextStyle(
+                                          fontSize: 17,
+                                          color: _isFollowing
+                                              ? Color.fromRGBO(
+                                                  82, 184, 206, 100)
+                                              : Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        userModel.name,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        userModel.bio,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Row(
+                        children: [
+                          Text(
+                            '$_followingCount Following',
+                            style: TextStyle(
+                              color: Color.fromRGBO(82, 184, 206, 100),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 2,
                             ),
+                          ),
+                          SizedBox(width: 20),
+                          Text(
+                            '$_followersCount Followers',
+                            style: TextStyle(
+                              color: Color.fromRGBO(82, 184, 206, 100),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: CupertinoSlidingSegmentedControl(
+                          groupValue: _profileSegmentedValue,
+                          thumbColor: Color.fromRGBO(82, 184, 206, 100),
+                          backgroundColor: Colors.blueGrey,
+                          children: _profileTabs,
+                          onValueChanged: (i) {
+                            setState(() {
+                              _profileSegmentedValue = i!;
+                            });
+                          },
+                        ),
+                      )
                     ],
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    userModel.name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    userModel.bio,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  Row(
-                    children: [
-                      Text(
-                        '$_followingCount Following',
-                        style: TextStyle(
-                          color: Color.fromARGB(142, 170, 96, 254),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      Text(
-                        '$_followersCount Followers',
-                        style: TextStyle(
-                          color: Color.fromARGB(142, 170, 96, 254),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: CupertinoSlidingSegmentedControl(
-                      groupValue: _profileSegmentedValue,
-                      thumbColor: Color.fromARGB(142, 170, 96, 254),
-                      backgroundColor: Colors.blueGrey,
-                      children: _profileTabs,
-                      onValueChanged: (i) {
-                        setState(() {
-                          _profileSegmentedValue = i!;
-                        });
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ),
-            buildProfileWidgets(userModel),
-          ],
-        );
-      },
-    ));
+                ),
+                buildProfileWidgets(userModel),
+              ],
+            );
+          },
+        ));
   }
 }

@@ -127,7 +127,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Container(
                   height: 150,
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(142, 170, 96, 254),
+                    color: Color.fromRGBO(82, 184, 206, 100),
                     image: _coverImage == null && widget.user.coverImage.isEmpty
                         ? null
                         : DecorationImage(
@@ -218,7 +218,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Color.fromARGB(142, 170, 96, 254),
+                          color: Color.fromRGBO(82, 184, 206, 100),
                         ),
                         child: Center(
                           child: Text(
@@ -244,7 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           decoration: InputDecoration(
                             labelText: 'Name',
                             labelStyle: TextStyle(
-                              color: Color.fromARGB(142, 170, 96, 254),
+                              color: Color.fromRGBO(82, 184, 206, 100),
                             ),
                           ),
                           validator: (input) => input!.trim().length < 2
@@ -260,7 +260,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           decoration: InputDecoration(
                             labelText: 'Bio',
                             labelStyle: TextStyle(
-                              color: Color.fromARGB(142, 170, 96, 254),
+                              color: Color.fromRGBO(82, 184, 206, 100),
                             ),
                           ),
                           onSaved: (value) {
@@ -271,7 +271,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _isLoading
                             ? CircularProgressIndicator(
                                 valueColor: AlwaysStoppedAnimation(
-                                  Color.fromARGB(142, 170, 96, 254),
+                                  Color.fromRGBO(82, 184, 206, 100),
                                 ),
                               )
                             : SizedBox.shrink()

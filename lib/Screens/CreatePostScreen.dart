@@ -23,14 +23,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   handleImageFromGallery() async {
     try {
-      ImagePicker imagePicker = ImagePicker();
-      PickedFile imageFile = (await imagePicker.pickImage(
-          source: ImageSource.gallery)) as PickedFile;
+      final XFile? imageFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+      );
       if (imageFile != null) {
         setState(() {
-          _pickedImage = imageFile as File;
+          _pickedImage = File(imageFile.path);
         });
       }
+      // ImagePicker imagePicker = ImagePicker();
+      // PickedFile imageFile = (await imagePicker.pickImage(
+      //     source: ImageSource.gallery)) as PickedFile;
+      // if (imageFile != null) {
+      //   setState(() {
+      //     _pickedImage = imageFile as File;
+      //   });
+      // }
     } catch (e) {
       print(e);
     }
@@ -40,7 +48,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(142, 170, 96, 254),
+        backgroundColor: Color.fromRGBO(82, 184, 206, 100),
         centerTitle: true,
         title: Text(
           'Post',
@@ -75,7 +83,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       Container(
                         height: 200,
                         decoration: BoxDecoration(
-                            color: Color.fromARGB(142, 170, 96, 254),
+                            color: Color.fromRGBO(82, 184, 206, 100),
                             image: DecorationImage(
                               fit: BoxFit.cover,
                               image: FileImage(_pickedImage!),
@@ -93,14 +101,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
                   border: Border.all(
-                    color: Color.fromARGB(142, 170, 96, 254),
+                    color: Color.fromRGBO(82, 184, 206, 100),
                     width: 2,
                   ),
                 ),
                 child: Icon(
                   Icons.camera_alt,
                   size: 50,
-                  color: Color.fromARGB(142, 170, 96, 254),
+                  color: Color.fromRGBO(82, 184, 206, 100),
                 ),
               ),
             ),

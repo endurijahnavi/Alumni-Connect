@@ -98,7 +98,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   return Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation(
-                        Color.fromARGB(142, 170, 96, 254),
+                        Color.fromRGBO(82, 184, 206, 100),
                       ),
                     ),
                   );

@@ -2,6 +2,7 @@ import 'package:appdevproject/Constants/Constants.dart';
 import 'package:appdevproject/Constants/Usermodel.dart';
 import 'package:appdevproject/Constants/activity.dart';
 import 'package:appdevproject/Constants/Post.dart';
+import 'package:appdevproject/Widgets/MessageBubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseServices {
@@ -84,7 +85,53 @@ class DatabaseServices {
     return followingDoc.exists;
   }
 
-  static void createPost(Post post) {
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static void sendMessage(Message message) {
+    // Save the message to the sender's collection
+    _firestore
+        .collection('messages')
+        .doc(message.senderId)
+        .collection('userMessages')
+        .doc(message.receiverId)
+        .collection('chat')
+        .add({
+      'messageText': message.messageText,
+      'timestamp': message.timestamp,
+      'senderId': message.senderId,
+      'receiverId': message.receiverId,
+    }); // Save the message to the receiver's collection
+    _firestore
+        .collection('messages')
+        .doc(message.receiverId)
+        .collection('userMessages')
+        .doc(message.senderId)
+        .collection('chat')
+        .add({
+      'messageText': message.messageText,
+      'timestamp': message.timestamp,
+      'senderId': message.senderId,
+      'receiverId': message.receiverId,
+    });
+  }
+
+  static Future<List<Message>> getUserMessages(
+      String userId, String otherUserId) async {
+    QuerySnapshot userMessagesSnap = await _firestore
+        .collection('messages')
+        .doc(userId)
+        .collection('userMessages')
+        .doc(otherUserId)
+        .collection('chat')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    List<Message> userMessages =
+        userMessagesSnap.docs.map((doc) => Message.fromDoc(doc)).toList();
+
+    return userMessages;
+  }
+
+  static Future<void> createPost(Post post) async {
     postsRef.doc(post.authorId).set({'postTime': post.timestamp});
     postsRef.doc(post.authorId).collection('userPosts').add({
       'text': post.text,
@@ -132,6 +179,36 @@ class DatabaseServices {
     List<Post> followingPosts =
         homePosts.docs.map((doc) => Post.fromDoc(doc)).toList();
     return followingPosts;
+  }
+
+  static Future<List<String>> getFollowingUsers(String userId) async {
+    QuerySnapshot followingSnapshot =
+        await followingRef.doc(userId).collection('Following').get();
+    List<String> followingUsers =
+        followingSnapshot.docs.map((doc) => doc.id).toList();
+    return followingUsers;
+  }
+
+  static Future<List<String>> getFollowersUsers(String userId) async {
+    QuerySnapshot followersSnapshot =
+        await followersRef.doc(userId).collection('Followers').get();
+    List<String> followersUsers =
+        followersSnapshot.docs.map((doc) => doc.id).toList();
+    return followersUsers;
+  }
+
+  static Future<List<UserModel>> getUsersDetails(List<String> userIds) async {
+    List<UserModel> usersDetails = [];
+
+    for (String userId in userIds) {
+      DocumentSnapshot userSnapshot = await usersRef.doc(userId).get();
+      if (userSnapshot.exists) {
+        UserModel user = UserModel.fromDoc(userSnapshot);
+        usersDetails.add(user);
+      }
+    }
+
+    return usersDetails;
   }
 
   static void likePost(String currentUserId, Post post) {

@@ -99,7 +99,7 @@ class _PostContainerState extends State<PostContainer> {
                     Container(
                       height: 250,
                       decoration: BoxDecoration(
-                          color: Color.fromARGB(142, 170, 96, 254),
+                          color: Color.fromRGBO(82, 184, 206, 100),
                           borderRadius: BorderRadius.circular(10),
                           image: DecorationImage(
                             fit: BoxFit.cover,
@@ -117,7 +117,9 @@ class _PostContainerState extends State<PostContainer> {
                   IconButton(
                     icon: Icon(
                       _isLiked ? Icons.favorite : Icons.favorite_border,
-                      color: _isLiked ? Colors.blue : Colors.white,
+                      color: _isLiked
+                          ? Color.fromRGBO(82, 184, 206, 100)
+                          : Colors.white,
                     ),
                     onPressed: likePost,
                   ),
@@ -134,7 +136,9 @@ class _PostContainerState extends State<PostContainer> {
             ],
           ),
           SizedBox(height: 10),
-          Divider()
+          Divider(
+            thickness: 2,
+          )
         ],
       ),
     );

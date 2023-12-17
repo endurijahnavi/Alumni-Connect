@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(142, 170, 96, 254),
+        backgroundColor: Color.fromRGBO(82, 184, 206, 100),
         elevation: 0.5,
         centerTitle: true,
         title: Text(
@@ -114,46 +114,38 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox.shrink(),
             SizedBox(height: 5),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 5),
-                _followingPosts.isEmpty && !_loading
-                    ? Column(
-                        children: [
-                          SizedBox(height: 5),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25),
-                            child: Text(
-                              'There are No New Posts',
-                              style: TextStyle(
-                                fontSize: 20,
-                              ),
-                            ),
+              children: _followingPosts.isEmpty && !_loading
+                  ? [
+                      SizedBox(height: 5),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 25),
+                        child: Text(
+                          'There are No New Posts',
+                          style: TextStyle(
+                            fontSize: 20,
                           ),
-                        ],
-                      )
-                    : FutureBuilder<List<Widget>>(
-                        future: showFollowingPosts(widget.currentUserId),
-                        builder: (context, snapshot) {
+                        ),
+                      ),
+                    ]
+                  : _followingPosts.map((tweet) {
+                      return FutureBuilder(
+                        future: usersRef.doc(tweet.authorId).get(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation(
-                                  Color.fromARGB(142, 170, 96, 254),
-                                ),
-                              ),
-                            );
+                            return Text("");
                           } else if (snapshot.hasError) {
                             return Text('Error: ${snapshot.error}');
+                          } else if (snapshot.hasData) {
+                            UserModel author = UserModel.fromDoc(snapshot.data);
+                            return buildPosts(tweet, author);
                           } else {
-                            return Column(
-                              children: snapshot.data ?? [],
-                            );
+                            return SizedBox.shrink();
                           }
                         },
-                      ),
-              ],
+                      );
+                    }).toList(),
             ),
           ],
         ),

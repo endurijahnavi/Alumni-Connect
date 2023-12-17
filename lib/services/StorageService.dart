@@ -42,8 +42,9 @@ class StorageService {
     String uniquePhotoId = Uuid().v4();
     File image = await compressImage(uniquePhotoId, imageFile);
 
-    UploadTask uploadTask =
-        storageRef.child('images/posts/post_$uniquePhotoId.jpg').putFile(image);
+    UploadTask uploadTask = storageRef
+        .child('images/tweets/tweet_$uniquePhotoId.jpg')
+        .putFile(image);
     TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
     String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return downloadUrl;
