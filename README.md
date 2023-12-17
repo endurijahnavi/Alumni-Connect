@@ -11,7 +11,8 @@ Features Include
 - Post your updates which will be visible in the feed of all the users that follow your account 
 - Like Posts that are informative or helpful
 
-Team 
+Team
+
 Enduri Jahnavi
 Prasanna 
 Rishi
